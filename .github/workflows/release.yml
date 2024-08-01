@@ -4,23 +4,23 @@ on:
   push:
     tags:
       - "v*.*.*"
-    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version: '^1.22.0'
+          cache-dependency-path: "**/*.sum"
       - name: Build x86_64
         run: cd src && CGO_ENABLED=0 go build -ldflags '-extldflags "-static"' -tags timetzdata -o ../aws-codeartifact-proxy-x86_64
       - name: Build arm64
         run: cd src && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags '-extldflags "-static"' -tags timetzdata -o ../aws-codeartifact-proxy-arm64
       - name: Github Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             aws-codeartifact-proxy-x86_64
